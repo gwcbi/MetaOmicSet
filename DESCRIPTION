@@ -16,3 +16,4 @@ Collate: GenericOmicSet-class.R
         MetaOmicSet-class.R
         hello.R
         metaOmic_class.R
+Suggests: testthat

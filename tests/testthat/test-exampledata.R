@@ -6,7 +6,7 @@ asthma.acc <- c('SRR1528344', 'SRR1528346', 'SRR1528348', 'SRR1528420',
                 'SRR1528466', 'SRR1528468')
 
 for(x in asthma.acc) {
-    test_that( paste0("example data for ", x, " is found"), {
+    test_that(paste0("example data for ", x, " is found"), {
         expect_false(
             system.file("extdata/asthma",
                         paste0(x, ".filtered.fastq-sam-report.tsv.gz"),

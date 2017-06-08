@@ -14,7 +14,7 @@
 setClass("GenericOmicSet",
     representation(
         name="character",
-        observationMetadata="DataFrame",    # Observations (i.e. samples)
+        sampleMetadata="DataFrame",    # Observations (i.e. samples)
         featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
         assays="Assays"
     ),
@@ -37,7 +37,7 @@ setMethod("length", "GenericOmicSet",
 )
 
 setMethod("dim", "GenericOmicSet",
-          function(x) c(length(x), nrow(x@observationMetadata))
+          function(x) c(length(x), nrow(x@sampleMetadata))
 )
 
 

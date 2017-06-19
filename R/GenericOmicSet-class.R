@@ -70,6 +70,6 @@ new_GenericOmicSet_phyloinput <- function(phylobject){
   if (isClass(phylobject,"phyloseq")){
     sampleMetadata <- as(sample_data(phyle),"data.frame")
     featureMetadata <- as(tax_table(phyle),"data.frame")
-    
+    ##to be completed...
   }
 }

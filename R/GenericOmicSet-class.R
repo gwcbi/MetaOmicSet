@@ -23,6 +23,7 @@ setClass("GenericOmicSet",
     )
 )
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
@@ -66,10 +67,11 @@ setMethod("dim", "GenericOmicSet",
 #         metadata=as.list(metadata))
 # }
 
-new_GenericOmicSet_phyloinput <- function(phylobject){
+read_phyloseq <- function(phylobject){
   if (isClass(phylobject,"phyloseq")){
-    sampleMetadata <- as(sample_data(phyle),"data.frame")
-    featureMetadata <- as(tax_table(phyle),"data.frame")
-    ##to be completed...
+    sampleMetadata <- as(as(sample_data(phylobject),"data.frame"),"DataFrame")
+    featureMetadata <- as(as(tax_table(phylobject),"matrix"),"DataFrame")
+    assay=Assays(SimpleList(as(otu_table(phyle),"matrix")))
+    genericomicset <- new("GenericOmicSet",name="phyloseq",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
   }
 }

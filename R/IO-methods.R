@@ -1,10 +1,8 @@
 # In case the user wants to create the object from multiple files in a directory
 # This function will extract the Sample IDs from the file names in the directory which can be further used to _______________
 get_sampleIds <- function(directory=".",
-                            file=0,
                             pattern_def=".tsv",
                             split_def="[.]") {
-  if (file==0){
     ## It is a directory of .tsv files
     l <- list.files(path = directory, pattern = pattern_def)
     s <- strsplit(l, split = split_def)
@@ -18,12 +16,10 @@ get_sampleIds <- function(directory=".",
         break
       }
     }
-  }
   return(list(sample_list, ucol))
 }
 
-params <- 
-  get_sampleIds(directory ="/Users/mrigank/Desktop/pathoStat/data_object",
-                  pattern_def = ".filtered.fastq-sam-report.tsv")
+#params <- #get_sampleIds(directory ="/Users/mrigank/Desktop/pathoStat/data_object",
+  #                pattern_def = ".filtered.fastq-sam-report.tsv")
 
 #read_pathoscope() <- function()

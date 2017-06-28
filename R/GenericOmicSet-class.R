@@ -68,10 +68,11 @@ setMethod("dim", "GenericOmicSet",
 # }
 
 read_phyloseq <- function(phylobject){
+  library(phyloseq) ##perhaps this needs to be somewhere else?
   if (isClass(phylobject,"phyloseq")){
     sampleMetadata <- as(as(sample_data(phylobject),"data.frame"),"DataFrame")
     featureMetadata <- as(as(tax_table(phylobject),"matrix"),"DataFrame")
-    assay=Assays(SimpleList(as(otu_table(phyle),"matrix")))
+    assay=Assays(SimpleList(as(otu_table(phylobject),"matrix")))
     genericomicset <- new("GenericOmicSet",name="phyloseq",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
   }
 }

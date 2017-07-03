@@ -46,7 +46,7 @@ uid2lineage<-function(x){
   
 }
 dflineage<-function(x){
-  out<-ldply(lapply(thelist,uid2lineage),data.frame)
+  out<-ldply(lapply(x,uid2lineage),data.frame)
   out[out=="NA"]<-NA
   return(out)
 }

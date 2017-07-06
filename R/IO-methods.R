@@ -1,6 +1,7 @@
 #############################################################################################################
 # In case the user wants to create the object from multiple files in a directory
-# This function will extract the Sample IDs from the file names in the directory which can be further used to # @param directory the path to directory that contains the sample files
+# This function will extract the Sample IDs from the file names in the directory
+# @param directory the path to directory that contains the sample files
 # @param pattern_def the pattern string, the part after the end of the sample IDs part
 # @param split_def the character that is used to split words in file names
 #############################################################################################################

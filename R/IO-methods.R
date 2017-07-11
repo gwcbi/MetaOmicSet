@@ -67,11 +67,3 @@ read_pathoscope <- function(dir_file = ".",
 }
 
 #a <- read_pathoscope(smeta_file = "Data-PRJNA255523.csv",pattern1 = ".filtered.fastq-sam-report.tsv")
-###########################################################
-#if (is.dir == 1){
-#  sid <- get_sampleIds(directory = dir_file,
-#                       pattern_def = pattern,
-#                       split_def = splitPoint)
-#  }
-###########################################################
-

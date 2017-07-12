@@ -1,10 +1,9 @@
-#############################################################################################################
-# In case the user wants to create the object from multiple files in a directory
-# This function will extract the Sample IDs from the file names in the directory
-# @param directory the path to directory that contains the sample files
-# @param pattern_def the pattern string, the part after the end of the sample IDs part
-# @param split_def the character that is used to split words in file names
-#############################################################################################################
+#' Extract Sample IDs from list of files
+#' @param directory the path to directory that contains the sample files
+#' @param pattern_def the pattern string, the part after the end of the sample IDs part
+#' @param split_def the character that is used to split words in file names
+#' @return A list of 2 elements, (1)the sample list & (2)column position with sample IDs in names
+#' @export
 get_sampleIds <- function(directory=".",
                             pattern_def=".tsv",
                             split_def="[.]") {
@@ -24,14 +23,15 @@ get_sampleIds <- function(directory=".",
   return(list(sample_list, ucol))
 }
 
-#############################################################################################
-# @param dir_file path for the directory with all sample files
-# @param s_list a list of all the sample IDs involved in the experiment
-# @param smeta_file a csv/tsv file containing the sample meta data
-# @param is.dir a flag parameter indicating if the "dir_file" parameter is a directory(1) or a file(0)
-# @param pattern0 & pattern1 these are the pattern of strings before and after the sample IDs
-# @param splitPoint the character that is used to split words in file names
-#############################################################################################
+#' Read Pathoscope output
+#' @param dir_file path for the directory with all sample files
+#' @param s_list a list of all the sample IDs involved in the experiment
+#' @param smeta_file a csv/tsv file containing the sample meta data
+#' @param is.dir a flag parameter, if the "dir_file" parameter is a directory(1) or a file (0)
+#' @param pattern0 & pattern1 these are the pattern of strings before and after the sample IDs
+#' @param splitPoint the character that is used to split words in file names
+#' @return A list of "Count data matrix" and "Sample metadata data frame"
+#' @export
 
 read_pathoscope <- function(dir_file = ".",
                               s_list = NULL,

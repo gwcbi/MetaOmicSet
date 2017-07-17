@@ -12,17 +12,14 @@
 ###
 
 setClass("GenericOmicSet",
-    representation(
-        name="character",
+    slots = c(name="character",
         sampleMetadata="DataFrame",    # Observations (i.e. samples)
         featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
-        assays="Assays"
-    ),
-    prototype(name=NA_character_,
+        assays="Assays"),
+    prototype=list(name=NA_character_,
               assays=SummarizedExperiment::Assays()
     )
 )
-
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
@@ -68,7 +65,7 @@ setMethod("dim", "GenericOmicSet",
 # }
 
 readinphyloseq <- function(phylobject){
-  if (isClass(phylobject,"phyloseq")){
+  if (isClass("phyloseq",phylobject)){
     sampleMetadata <- as(as(phyloseq::sample_data(phylobject),"data.frame"),"DataFrame")
     featureMetadata <- as(as(phyloseq::tax_table(phylobject),"matrix"),"DataFrame")
     assay=SummarizedExperiment::Assays(S4Vectors::SimpleList(as(phyloseq::otu_table(phylobject),"matrix")))
@@ -77,10 +74,10 @@ readinphyloseq <- function(phylobject){
 }
 
 readinbiom <- function(biomobject){
-  ##if statement will go here...
+  if(isClass("biom",biomobject)){
     sampleMetadata <- as(biomformat::sample_metadata(biomobject),"DataFrame")
     featureMetadata <- as(biomformat::observation_metadata(biomobject),"DataFrame")
     assay=SummarizedExperiment::Assays(S4Vectors::SimpleList(as(biomformat::biom_data(biomobject),"matrix")))
     genericomicset <- new("GenericOmicSet",name="biomIn",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
-  ##and end here...
+  }
 }

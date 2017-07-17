@@ -25,6 +25,33 @@ setClass("GenericOmicSet",
 ### Validity.
 ###
 
+setValidity("GenericOmicSet",function(object){
+  msg <- NULL
+  valid <- TRUE
+    if(ncol(object@assays) != dim(object)[[2]]){
+      valid <- FALSE
+      msg <- c(msg,
+               "number of sample data and metadata column must match.")
+    }
+  ##Empty feature_metadata is valid as data could be loaded later...
+  if(nrow(object@assays) != length(object) && length(object) != 0){
+    valid <- FALSE
+    msg <- c(msg,
+             "number of feature data and non-empty metadata rows must match.")
+  }
+  if(!identical(ncol(object@assays),dim(object)[[2]])){
+    valid <- FALSE
+    msg <- c(msg,
+             "sample data and metadata names must match perfectly.")
+  }
+  if(!identical(nrow(object@assays),length(object)) && length(object) != 0){
+    valid <- FALSE
+    msg <- c(msg,
+             "feature data and non-empty metadata names must match perfectly.")
+  }
+  
+  if (valid) TRUE else msg
+})
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters and setters.
@@ -63,6 +90,10 @@ setMethod("dim", "GenericOmicSet",
 #         assays=assays,
 #         metadata=as.list(metadata))
 # }
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### constructors for different inputs.
+###
 
 readinphyloseq <- function(phylobject){
   if (isClass("phyloseq",phylobject)){

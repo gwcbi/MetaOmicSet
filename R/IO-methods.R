@@ -63,7 +63,9 @@ read_pathoscope <- function(dir_file = ".",
   rownames(metaGenome) <- metaGenome[,1]
   metaGenome <- metaGenome[,-1]
   colnames(metaGenome) <- rownames(colData)
-  return(list(metaGenome, colData))
+  taxids <- gsub("ti\\|", "", rownames(metaGenome))
+  lineage <- uid2lineage(taxids)
+  return(list(metaGenome, colData, lineage))
 }
 
 #a <- read_pathoscope(smeta_file = "Data-PRJNA255523.csv",pattern1 = ".filtered.fastq-sam-report.tsv")

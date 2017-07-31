@@ -14,7 +14,8 @@ Imports: tidyverse,
         SummarizedExperiment,
         BiocGenerics,
         S4Vectors,
-	taxize
+	taxize,
+	magrittr
 Collate: GenericOmicSet-class.R
         MetaOmicSet-class.R
         uid2lineage.R

@@ -28,6 +28,7 @@ setClass("GenericOmicSet",
 ###
 
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters and setters.
 ###
@@ -65,3 +66,8 @@ setMethod("dim", "GenericOmicSet",
 #         assays=assays,
 #         metadata=as.list(metadata))
 # }
+
+metaGenomicSet <- setClass("metaGenomicSet",
+                           slots = c(Assays = "matrix",
+                                     fmeta = "data.frame",
+                                     smeta = "data.frame"))

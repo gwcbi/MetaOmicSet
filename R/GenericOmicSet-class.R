@@ -71,3 +71,42 @@ metaGenomicSet <- setClass("metaGenomicSet",
                            slots = c(Assays = "matrix",
                                      fmeta = "data.frame",
                                      smeta = "data.frame"))
+##
+# defining the "show" Generic method
+##
+setMethod("show",
+          signature = "metaGenomicSet",
+          definition = function(object){
+            cat("An object of class", class(object), "\n", sep = "")
+            cat(" ",
+                nrow(object@Assays), " OTUs by",
+                ncol(object@Assays), " samples.\n",
+                sep = "")
+            invisible(NULL)
+          })
+
+##
+# Defining Accessor for the "Assays" slot of the metaGenomicSet
+##
+setGeneric("Assays", function(object, ...) standardGeneric("Assays"))
+
+setMethod("Assays", "metaGenomicSet",
+          function(object) object@Assays)
+
+##
+# Defining Accessor for the "fmeta" slot of the metaGenomicSet
+##
+setGeneric("fmeta", function(object, ...) standardGeneric("fmeta"))
+
+setMethod("fmeta", "metaGenomicSet",
+          function(object) object@fmeta)
+
+##
+# Defining Accessor for the "smeta" slot of the metaGenomicSet
+##
+setGeneric("smeta", function(object, ...) standardGeneric("smeta"))
+
+setMethod("smeta", "metaGenomicSet",
+          function(object) object@smeta)
+
+

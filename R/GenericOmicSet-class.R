@@ -67,10 +67,21 @@ setMethod("dim", "GenericOmicSet",
 #         metadata=as.list(metadata))
 # }
 
+
+
+
+
+
+
+
+##
+# Defining "metaGenomicSet" class
+##
 metaGenomicSet <- setClass("metaGenomicSet",
                            slots = c(Assays = "matrix",
                                      fmeta = "data.frame",
                                      smeta = "data.frame"))
+
 ##
 # defining the "show" Generic method
 ##
@@ -122,3 +133,29 @@ setMethod("[",
                            fmeta = .fmeta,
                            smeta = .smeta)
           })
+
+##
+# Validity methods for metaGenomicSet object
+##
+setValidity("metaGenomicSet",
+            function(object){
+              msg <- NULL
+              valid <- TRUE
+              if(nrow(Assays(object)) != nrow(fmeta(object))){
+                valid <- FALSE
+                msg <- c(msg, "Number of data & feature meta-data rows must be identical")
+              }
+              if(ncol(Assays(object)) != nrow(smeta(object))){
+                valid <- FALSE
+                msg <- c(msg, "Number of data rows & sample meta-data columns must be identical")
+              }
+              if(!identical(rownames(Assays(object)), fmeta(object)[,1])){
+                valid <- FALSE
+                msg <- c(msg, "Data & feature meta-data row names must be identical")
+              }
+              if(!identical(colnames(Assays(object)), rownames(smeta(object)))){
+                valid <- FALSE
+                msg <- c(msg, "Data row-names & sample meta-data columns names must be identical")
+              }
+              if(valid) TRUE else msg
+            })

@@ -79,7 +79,7 @@ setMethod("show",
           definition = function(object){
             cat("An object of class", class(object), "\n", sep = "")
             cat(" ",
-                nrow(object@Assays), " OTUs by",
+                nrow(object@Assays), " OTUs by ",
                 ncol(object@Assays), " samples.\n",
                 sep = "")
             invisible(NULL)
@@ -109,4 +109,16 @@ setGeneric("smeta", function(object, ...) standardGeneric("smeta"))
 setMethod("smeta", "metaGenomicSet",
           function(object) object@smeta)
 
-
+##
+# Defining the sub-setting operation function
+##
+setMethod("[",
+          signature = "metaGenomicSet",
+          function(x, i, j, drop="missing"){
+            .Assays <- x@Assays[i,j]
+            .fmeta <- x@fmeta[i,]
+            .smeta <- x@smeta[j,]
+            metaGenomicSet(Assays = .Assays,
+                           fmeta = .fmeta,
+                           smeta = .smeta)
+          })

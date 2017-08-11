@@ -68,14 +68,12 @@ setMethod("dim", "GenericOmicSet",
 # }
 
 
-
-
-
-
-
-
 ##
 # Defining "metaGenomicSet" class
+#' @slot Assays the OTU count matrix
+#' @slot fmeta OTUs metadata
+#' @slot smeta sample meta data as provided by the user
+#' @export metaGenomicSet
 ##
 metaGenomicSet <- setClass("metaGenomicSet",
                            slots = c(Assays = "matrix",
@@ -83,7 +81,8 @@ metaGenomicSet <- setClass("metaGenomicSet",
                                      smeta = "data.frame"))
 
 ##
-# defining the "show" Generic method
+# Setting the "show" Generic method
+#' @export
 ##
 setMethod("show",
           signature = "metaGenomicSet",
@@ -98,17 +97,21 @@ setMethod("show",
 
 ##
 # Defining Accessor for the "Assays" slot of the metaGenomicSet
+
 ##
 setGeneric("Assays", function(object, ...) standardGeneric("Assays"))
 
+#' @export
 setMethod("Assays", "metaGenomicSet",
           function(object) object@Assays)
 
 ##
 # Defining Accessor for the "fmeta" slot of the metaGenomicSet
+
 ##
 setGeneric("fmeta", function(object, ...) standardGeneric("fmeta"))
 
+#' @export
 setMethod("fmeta", "metaGenomicSet",
           function(object) object@fmeta)
 
@@ -117,11 +120,13 @@ setMethod("fmeta", "metaGenomicSet",
 ##
 setGeneric("smeta", function(object, ...) standardGeneric("smeta"))
 
+#' @export
 setMethod("smeta", "metaGenomicSet",
           function(object) object@smeta)
 
 ##
 # Defining the sub-setting operation function
+#' @export
 ##
 setMethod("[",
           signature = "metaGenomicSet",
@@ -136,6 +141,7 @@ setMethod("[",
 
 ##
 # Validity methods for metaGenomicSet object
+#' @export
 ##
 setValidity("metaGenomicSet",
             function(object){

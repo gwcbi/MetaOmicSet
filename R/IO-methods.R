@@ -30,7 +30,7 @@ get_sampleIds <- function(directory=".",
 #' @param is.dir a flag parameter, if the "dir_file" parameter is a directory(1) or a file (0)
 #' @param pattern0 & pattern1 these are the pattern of strings before and after the sample IDs
 #' @param splitPoint the character that is used to split words in file names
-#' @return A list of "Count data matrix" and "Sample metadata data frame"
+#' @return A list of "Count data matrix" and "Sample metadata data frame" and the "TaxIDs for the OTUs"
 #' @export
 
 read_pathoscope <- function(dir_file = ".",

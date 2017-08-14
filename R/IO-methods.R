@@ -63,6 +63,7 @@ read_pathoscope <- function(dir_file = ".",
   rownames(metaGenome) <- metaGenome[,1]
   metaGenome <- metaGenome[,-1]
   colnames(metaGenome) <- rownames(colData)
+  #metaGenome <- as.numeric(metaGenome)
   taxids <- gsub("ti\\|", "", rownames(metaGenome))
   lineage <- uid2lineage(taxids)
   lineage[ ,1] <- rownames(metaGenome)

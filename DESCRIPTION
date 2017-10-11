@@ -11,11 +11,14 @@ Encoding: UTF-8
 LazyData: true
 Depends: R (>= 3.3.1)
 Imports: tidyverse,
-        SummarizedExperiment,
-        BiocGenerics,
-        S4Vectors,
-	taxize,
-	magrittr
+         SummarizedExperiment,
+         BiocGenerics,
+         S4Vectors,
+         Phyloseq,
+         Biomformat,
+         taxize,
+         magrittr
+
 Collate: GenericOmicSet-class.R
         MetaOmicSet-class.R
         uid2lineage.R

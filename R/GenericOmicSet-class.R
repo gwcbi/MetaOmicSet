@@ -12,21 +12,46 @@
 ###
 
 setClass("GenericOmicSet",
-    representation(
-        name="character",
-        sampleMetadata="DataFrame",    # Observations (i.e. samples)
-        featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
-        assays="Assays"
-    ),
-    prototype(name=NA_character_,
-              assays=SummarizedExperiment::Assays()
-    )
+         slots = c(name="character",
+                   sampleMetadata="DataFrame",    # Observations (i.e. samples)
+                   featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
+                   assays="Assays"),
+         prototype=list(name=NA_character_,
+                        assays=SummarizedExperiment::Assays()
+         )
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
+setValidity("GenericOmicSet",function(object){
+  msg <- NULL
+  valid <- TRUE
+  if(ncol(object@assays) != dim(object)[[2]]){
+    valid <- FALSE
+    msg <- c(msg,
+             "number of sample data and metadata column must match.")
+  }
+  ##Empty feature_metadata is valid as data could be loaded later...
+  if(nrow(object@assays) != length(object) && length(object) != 0){
+    valid <- FALSE
+    msg <- c(msg,
+             "number of feature data and non-empty metadata rows must match.")
+  }
+  if(!identical(ncol(object@assays),dim(object)[[2]])){
+    valid <- FALSE
+    msg <- c(msg,
+             "sample data and metadata names must match perfectly.")
+  }
+  if(!identical(nrow(object@assays),length(object)) && length(object) != 0){
+    valid <- FALSE
+    msg <- c(msg,
+             "feature data and non-empty metadata names must match perfectly.")
+  }
+  
+  if (valid) TRUE else msg
+})
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,7 +91,27 @@ setMethod("dim", "GenericOmicSet",
 #         assays=assays,
 #         metadata=as.list(metadata))
 # }
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### constructors for different inputs.
+###
 
+readinphyloseq <- function(phylobject){
+  if (isClass("phyloseq",phylobject)){
+    sampleMetadata <- as(as(phyloseq::sample_data(phylobject),"data.frame"),"DataFrame")
+    featureMetadata <- as(as(phyloseq::tax_table(phylobject),"matrix"),"DataFrame")
+    assay=SummarizedExperiment::Assays(S4Vectors::SimpleList(as(phyloseq::otu_table(phylobject),"matrix")))
+    genericomicset <- new("GenericOmicSet",name="phyloIn",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
+  }
+}
+
+readinbiom <- function(biomobject){
+  if(isClass("biom",biomobject)){
+    sampleMetadata <- as(biomformat::sample_metadata(biomobject),"DataFrame")
+    featureMetadata <- as(biomformat::observation_metadata(biomobject),"DataFrame")
+    assay=SummarizedExperiment::Assays(S4Vectors::SimpleList(as(biomformat::biom_data(biomobject),"matrix")))
+    genericomicset <- new("GenericOmicSet",name="biomIn",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
+  }
+}
 
 ##
 # Defining "metaGenomicSet" class

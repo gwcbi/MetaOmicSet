@@ -12,14 +12,12 @@
 ###
 
 setClass("GenericOmicSet",
-         representation(
-           name="character",
-           sampleMetadata="DataFrame",    # Observations (i.e. samples)
-           featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
-           assays="Assays"
-         ),
-         prototype(name=NA_character_,
-                   assays=SummarizedExperiment::Assays()
+         slots = c(name="character",
+                   sampleMetadata="DataFrame",    # Observations (i.e. samples)
+                   featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
+                   assays="Assays"),
+         prototype=list(name=NA_character_,
+                        assays=SummarizedExperiment::Assays()
          )
 )
 

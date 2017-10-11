@@ -16,9 +16,12 @@ Imports: tidyverse,
          S4Vectors,
          Phyloseq,
          Biomformat,
-         taxize
+         taxize,
+         magrittr
+
 Collate: GenericOmicSet-class.R
         MetaOmicSet-class.R
         uid2lineage.R
+        IO-methods.R
 Suggests: testthat
 RoxygenNote: 6.0.1

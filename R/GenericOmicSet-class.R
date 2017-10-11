@@ -53,6 +53,7 @@ setValidity("GenericOmicSet",function(object){
   if (valid) TRUE else msg
 })
 
+
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Getters and setters.
 ###
@@ -90,7 +91,6 @@ setMethod("dim", "GenericOmicSet",
 #         assays=assays,
 #         metadata=as.list(metadata))
 # }
-
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### constructors for different inputs.
 ###
@@ -112,3 +112,101 @@ readinbiom <- function(biomobject){
     genericomicset <- new("GenericOmicSet",name="biomIn",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
   }
 }
+
+##
+# Defining "metaGenomicSet" class
+#' @slot Assays the OTU count matrix
+#' @slot fmeta OTUs metadata
+#' @slot smeta sample meta data as provided by the user
+#' @export metaGenomicSet
+##
+metaGenomicSet <- setClass("metaGenomicSet",
+                           slots = c(Assays = "matrix",
+                                     fmeta = "data.frame",
+                                     smeta = "data.frame"))
+
+##
+# Setting the "show" Generic method
+#' @export
+##
+setMethod("show",
+          signature = "metaGenomicSet",
+          definition = function(object){
+            cat("An object of class", class(object), "\n", sep = "")
+            cat(" ",
+                nrow(object@Assays), " OTUs by ",
+                ncol(object@Assays), " samples.\n",
+                sep = "")
+            invisible(NULL)
+          })
+
+##
+# Defining Accessor for the "Assays" slot of the metaGenomicSet
+
+##
+setGeneric("Assays", function(object, ...) standardGeneric("Assays"))
+
+#' @export
+setMethod("Assays", "metaGenomicSet",
+          function(object) object@Assays)
+
+##
+# Defining Accessor for the "fmeta" slot of the metaGenomicSet
+
+##
+setGeneric("fmeta", function(object, ...) standardGeneric("fmeta"))
+
+#' @export
+setMethod("fmeta", "metaGenomicSet",
+          function(object) object@fmeta)
+
+##
+# Defining Accessor for the "smeta" slot of the metaGenomicSet
+##
+setGeneric("smeta", function(object, ...) standardGeneric("smeta"))
+
+#' @export
+setMethod("smeta", "metaGenomicSet",
+          function(object) object@smeta)
+
+##
+# Defining the sub-setting operation function
+#' @export
+##
+setMethod("[",
+          signature = "metaGenomicSet",
+          function(x, i, j, drop="missing"){
+            .Assays <- x@Assays[i,j]
+            .fmeta <- x@fmeta[i,]
+            .smeta <- x@smeta[j,]
+            metaGenomicSet(Assays = .Assays,
+                           fmeta = .fmeta,
+                           smeta = .smeta)
+          })
+
+##
+# Validity methods for metaGenomicSet object
+#' @export
+##
+setValidity("metaGenomicSet",
+            function(object){
+              msg <- NULL
+              valid <- TRUE
+              if(nrow(Assays(object)) != nrow(fmeta(object))){
+                valid <- FALSE
+                msg <- c(msg, "Number of data & feature meta-data rows must be identical")
+              }
+              if(ncol(Assays(object)) != nrow(smeta(object))){
+                valid <- FALSE
+                msg <- c(msg, "Number of data rows & sample meta-data columns must be identical")
+              }
+              if(!identical(rownames(Assays(object)), fmeta(object)[,1])){
+                valid <- FALSE
+                msg <- c(msg, "Data & feature meta-data row names must be identical")
+              }
+              if(!identical(colnames(Assays(object)), rownames(smeta(object)))){
+                valid <- FALSE
+                msg <- c(msg, "Data row-names & sample meta-data columns names must be identical")
+              }
+              if(valid) TRUE else msg
+            })

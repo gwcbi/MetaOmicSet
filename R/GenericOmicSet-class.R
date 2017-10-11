@@ -12,13 +12,15 @@
 ###
 
 setClass("GenericOmicSet",
-    slots = c(name="character",
-        sampleMetadata="DataFrame",    # Observations (i.e. samples)
-        featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
-        assays="Assays"),
-    prototype=list(name=NA_character_,
-              assays=SummarizedExperiment::Assays()
-    )
+         representation(
+           name="character",
+           sampleMetadata="DataFrame",    # Observations (i.e. samples)
+           featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
+           assays="Assays"
+           ),
+         prototype(name=NA_character_,
+                        assays=SummarizedExperiment::Assays()
+         )
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -28,11 +30,11 @@ setClass("GenericOmicSet",
 setValidity("GenericOmicSet",function(object){
   msg <- NULL
   valid <- TRUE
-    if(ncol(object@assays) != dim(object)[[2]]){
-      valid <- FALSE
-      msg <- c(msg,
-               "number of sample data and metadata column must match.")
-    }
+  if(ncol(object@assays) != dim(object)[[2]]){
+    valid <- FALSE
+    msg <- c(msg,
+             "number of sample data and metadata column must match.")
+  }
   ##Empty feature_metadata is valid as data could be loaded later...
   if(nrow(object@assays) != length(object) && length(object) != 0){
     valid <- FALSE

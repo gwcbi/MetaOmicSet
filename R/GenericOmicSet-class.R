@@ -17,9 +17,9 @@ setClass("GenericOmicSet",
            sampleMetadata="DataFrame",    # Observations (i.e. samples)
            featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
            assays="Assays"
-           ),
+         ),
          prototype(name=NA_character_,
-                        assays=SummarizedExperiment::Assays()
+                   assays=SummarizedExperiment::Assays()
          )
 )
 

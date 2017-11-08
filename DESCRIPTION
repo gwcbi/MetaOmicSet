@@ -18,7 +18,6 @@ Imports: tidyverse,
          Biomformat,
          taxize,
          magrittr
-
 Collate: GenericOmicSet-class.R
         MetaOmicSet-class.R
         uid2lineage.R

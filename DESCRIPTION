@@ -15,7 +15,7 @@ Imports: tidyverse,
          BiocGenerics,
          S4Vectors,
          phyloseq,
-         Biomformat,
+         biomformat,
          taxize,
          magrittr
 Collate: GenericOmicSet-class.R

@@ -14,7 +14,7 @@ Imports: tidyverse,
          SummarizedExperiment,
          BiocGenerics,
          S4Vectors,
-         Phyloseq,
+         phyloseq,
          Biomformat,
          taxize,
          magrittr

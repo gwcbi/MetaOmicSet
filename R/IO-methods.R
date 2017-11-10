@@ -40,12 +40,12 @@ read_pathoscope <- function(dir_file = ".",
                               pattern0 = "",
                               pattern1 = ".tsv",
                               splitPoint = "[.]"){
-  colData <- read.csv(smeta_file,
+  colData <- read.csv(paste(dir_file,smeta_file, sep="/"),
                       row.names = 1,
                       skip = 4,
                       header = T)
   for(i in rownames(colData)){
-    df <- read.csv(paste0(pattern0, i, pattern1),
+    df <- read.csv(paste0(dir_file, "/", pattern0, i, pattern1),
                    skip = 1,
                    header = T,
                    stringsAsFactors = F,

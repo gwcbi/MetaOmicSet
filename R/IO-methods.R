@@ -23,7 +23,7 @@ get_sampleIds <- function(directory=".",
   return(list(sample_list, ucol))
 }
 
-#' Read Pathoscope output
+#' Read Pathoscope input
 #' @param dir_file path for the directory with all sample files
 #' @param s_list a list of all the sample IDs involved in the experiment
 #' @param smeta_file a csv/tsv file containing the sample meta data
@@ -68,4 +68,50 @@ read_pathoscope <- function(dir_file = ".",
   lineage[ ,1] <- rownames(metaGenome)
   class(metaGenome) <- "numeric"
   return(list(metaGenome, colData, lineage))
+}
+
+#' Read phyloseq RDS file input
+#' @param phyloseq_RDS full path to file
+#' @return A list of "Count data matrix" and "Sample metadata data frame" and the "TaxIDs for the OTUs"
+#' @export
+
+read_phyloseq_RDS <- function(phyloseq_RDS){
+  phylobject <- readRDS(phyloseq_RDS)
+  xload_in_phyloseq(phylobject) 
+}
+
+#' Read biom file input
+#' @param biom_file full path to file
+#' @return A list of "Count data matrix" and "Sample metadata data frame" and the "TaxIDs for the OTUs"
+#' @export
+
+
+read_biom_file <- function(biom_file){
+  ##similarity beterrn read_biom and read_biom_file could cause issues...
+  biomobject <- biomformat::read_biom(biom_file)
+  xload_in_biom(biomobject)
+}
+
+##functions not intended for users...
+
+xload_in_phyloseq <- function(phylobject){
+  if (isClass("phyloseq",phylobject)){
+    smeta <- as(as(phyloseq::sample_data(phylobject),"data.frame"),"DataFrame")
+    fmeta <- as(as(phyloseq::tax_table(phylobject),"matrix"),"DataFrame")
+    assay <- SummarizedExperiment::Assays(S4Vectors::SimpleList(as(phyloseq::otu_table(phylobject),"matrix")))
+    ##genericomicset <- new("genericOmicSet",name="phyloIn",smeta=smeta,fmeta=fmeta,assays=assay)
+    ##metagenomicset <- new("metaGenomicSet",smeta=smeta,fmeta=fmeta,assays=assay)
+    return(list(dim(assay[[1]]), dim(smeta),dim(fmeta)))
+  }
+}
+
+xload_in_biom <- function(biomobject){
+  if(isClass("biom",biomobject)){
+    smeta <- as(biomformat::sample_metadata(biomobject),"DataFrame")
+    fmeta <- as(biomformat::observation_metadata(biomobject),"DataFrame")
+    assay <- SummarizedExperiment::Assays(S4Vectors::SimpleList(as(biomformat::biom_data(biomobject),"matrix")))
+    ##genericomicset <- new("genericOmicSet",name="biomIn",smeta=smeta,fmeta=fmeta,assays=assay)
+    ##metagenomicset <- new("metaGenomicSet",smeta=smeta,fmeta=fmeta,assays=assay)
+    return(list(dim(assay[[1]]), dim(smeta),dim(fmeta)))
+  }
 }

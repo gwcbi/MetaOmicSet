@@ -2,7 +2,7 @@
 ### Testing:
 ### Restart R (Session -> Restart R)
 ### devtools::load_all()
-### x <- new("GenericOmicSet", name='myset')
+### x <- new("genericOmicSet", name='myset')
 ### dim(x)
 
 
@@ -11,10 +11,19 @@
 ### -------------------------------------------------------------------------
 ###
 
-setClass("GenericOmicSet",
+##
+# Defining "genericOmicSet" class
+#' @slot name name of the object
+#' @slot smeta Observation (i.e. samples, etc.)
+#' @slot fmeta Features (i.e. genes, OTUs, etc.)
+#' @slot assays count matrix
+#' @export genericOmicSet
+##
+
+setClass("genericOmicSet",
          slots = c(name="character",
-                   sampleMetadata="DataFrame",    # Observations (i.e. samples)
-                   featureMetadata="DataFrame",        # Features (i.e. genes, OTUs, etc.)
+                   smeta="DataFrame",
+                   fmeta="DataFrame",
                    assays="Assays"),
          prototype=list(name=NA_character_,
                         assays=SummarizedExperiment::Assays()
@@ -22,29 +31,37 @@ setClass("GenericOmicSet",
 )
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+### Defining Accessor methods.
+###
+
+setMethod("length", "genericOmicSet",
+          function(x) nrow(x@fmeta)
+)
+
+### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ### Validity.
 ###
 
-setValidity("GenericOmicSet",function(object){
+setValidity("genericOmicSet",function(object){
   msg <- NULL
   valid <- TRUE
-  if(ncol(object@assays) != dim(object)[[2]]){
-    valid <- FALSE
-    msg <- c(msg,
-             "number of sample data and metadata column must match.")
-  }
   ##Empty feature_metadata is valid as data could be loaded later...
   if(nrow(object@assays) != length(object) && length(object) != 0){
     valid <- FALSE
     msg <- c(msg,
-             "number of feature data and non-empty metadata rows must match.")
+             "number of feature data and metadata rows must match (if metadata not empty).")
   }
-  if(!identical(ncol(object@assays),dim(object)[[2]])){
+  if(ncol(object@assays) != nrow(object@smeta)){
+    valid <- FALSE
+    msg <- c(msg,
+             "number of sample data and metadata column must match.")
+  }
+  if(!identical(colnames(object@assays[[1]]),rownames(object@smeta))){
     valid <- FALSE
     msg <- c(msg,
              "sample data and metadata names must match perfectly.")
   }
-  if(!identical(nrow(object@assays),length(object)) && length(object) != 0){
+  if(!identical(rownames(object@assays[[1]]), rownames(object@fmeta)) && length(object) != 0){
     valid <- FALSE
     msg <- c(msg,
              "feature data and non-empty metadata names must match perfectly.")
@@ -52,19 +69,6 @@ setValidity("GenericOmicSet",function(object){
   
   if (valid) TRUE else msg
 })
-
-
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### Getters and setters.
-###
-
-setMethod("length", "GenericOmicSet",
-          function(x) nrow(x@featureMetadata)
-)
-
-setMethod("dim", "GenericOmicSet",
-          function(x) c(length(x), nrow(x@sampleMetadata))
-)
 
 
 ### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -91,39 +95,24 @@ setMethod("dim", "GenericOmicSet",
 #         assays=assays,
 #         metadata=as.list(metadata))
 # }
-### - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-### constructors for different inputs.
-###
 
-readinphyloseq <- function(phylobject){
-  if (isClass("phyloseq",phylobject)){
-    sampleMetadata <- as(as(phyloseq::sample_data(phylobject),"data.frame"),"DataFrame")
-    featureMetadata <- as(as(phyloseq::tax_table(phylobject),"matrix"),"DataFrame")
-    assay=SummarizedExperiment::Assays(S4Vectors::SimpleList(as(phyloseq::otu_table(phylobject),"matrix")))
-    genericomicset <- new("GenericOmicSet",name="phyloIn",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
-  }
-}
-
-readinbiom <- function(biomobject){
-  if(isClass("biom",biomobject)){
-    sampleMetadata <- as(biomformat::sample_metadata(biomobject),"DataFrame")
-    featureMetadata <- as(biomformat::observation_metadata(biomobject),"DataFrame")
-    assay=SummarizedExperiment::Assays(S4Vectors::SimpleList(as(biomformat::biom_data(biomobject),"matrix")))
-    genericomicset <- new("GenericOmicSet",name="biomIn",sampleMetadata=sampleMetadata,featureMetadata=featureMetadata,assays=assay)
-  }
-}
 
 ##
 # Defining "metaGenomicSet" class
-#' @slot Assays the OTU count matrix
+#' @slot assays the OTU count matrix
 #' @slot fmeta OTUs metadata
 #' @slot smeta sample meta data as provided by the user
 #' @export metaGenomicSet
 ##
 metaGenomicSet <- setClass("metaGenomicSet",
-                           slots = c(Assays = "matrix",
-                                     fmeta = "data.frame",
-                                     smeta = "data.frame"))
+                           slots = c(assays = "Assays",
+                                     fmeta = "DataFrame",
+                                     smeta = "DataFrame"),
+                           prototype=list(name=NA_character_,
+                                          assays=SummarizedExperiment::Assays()
+                           )
+)
+
 
 ##
 # Setting the "show" Generic method
@@ -134,8 +123,8 @@ setMethod("show",
           definition = function(object){
             cat("An object of class", class(object), "\n", sep = "")
             cat(" ",
-                nrow(object@Assays), " OTUs by ",
-                ncol(object@Assays), " samples.\n",
+                nrow(object@assays), " OTUs by ",
+                ncol(object@assays), " samples.\n",
                 sep = "")
             invisible(NULL)
           })
@@ -144,11 +133,11 @@ setMethod("show",
 # Defining Accessor for the "Assays" slot of the metaGenomicSet
 
 ##
-setGeneric("Assays", function(object, ...) standardGeneric("Assays"))
+setGeneric("assays", function(object, ...) standardGeneric("assays"))
 
 #' @export
-setMethod("Assays", "metaGenomicSet",
-          function(object) object@Assays)
+setMethod("assays", "metaGenomicSet",
+          function(object) object@assays)
 
 ##
 # Defining Accessor for the "fmeta" slot of the metaGenomicSet
@@ -173,38 +162,37 @@ setMethod("smeta", "metaGenomicSet",
 # Defining the sub-setting operation function
 #' @export
 ##
-setMethod("[",
-          signature = "metaGenomicSet",
-          function(x, i, j, drop="missing"){
-            .Assays <- x@Assays[i,j]
-            .fmeta <- x@fmeta[i,]
-            .smeta <- x@smeta[j,]
-            metaGenomicSet(Assays = .Assays,
-                           fmeta = .fmeta,
-                           smeta = .smeta)
-          })
+# setMethod("[",
+#           signature = "metaGenomicSet",
+#           function(x, i, j, drop="missing"){
+#             .assays <- x@assays[i,j]
+#             .fmeta <- x@fmeta[i,]
+#             .smeta <- x@smeta[j,]
+#             metaGenomicSet(assays = .assays,
+#                            fmeta = .fmeta,
+#                            smeta = .smeta)
+#           })
 
 ##
 # Validity methods for metaGenomicSet object
 #' @export
 ##
-setValidity("metaGenomicSet",
-            function(object){
+setValidity("metaGenomicSet",function(object){
               msg <- NULL
               valid <- TRUE
-              if(nrow(Assays(object)) != nrow(fmeta(object))){
+              if(nrow(assays(object)) != nrow(fmeta(object))){
                 valid <- FALSE
                 msg <- c(msg, "Number of data & feature meta-data rows must be identical")
               }
-              if(ncol(Assays(object)) != nrow(smeta(object))){
+              if(ncol(assays(object)) != nrow(smeta(object))){
                 valid <- FALSE
                 msg <- c(msg, "Number of data rows & sample meta-data columns must be identical")
               }
-              if(!identical(rownames(Assays(object)), fmeta(object)[,1])){
+              if(!identical(rownames(assays(object)[[1]]), rownames(fmeta(object)))){
                 valid <- FALSE
                 msg <- c(msg, "Data & feature meta-data row names must be identical")
               }
-              if(!identical(colnames(Assays(object)), rownames(smeta(object)))){
+              if(!identical(colnames(assays(object)[[1]]), rownames(smeta(object)))){
                 valid <- FALSE
                 msg <- c(msg, "Data row-names & sample meta-data columns names must be identical")
               }
